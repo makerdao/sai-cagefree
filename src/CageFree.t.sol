@@ -2,7 +2,8 @@ pragma solidity 0.5.15;
 
 import "ds-test/test.sol";
 import "ds-math/math.sol";
-import "lib/dss-interfaces/src/Interfaces.sol";
+//import "lib/dss-interfaces/src/Interfaces.sol";
+import "lib/dss-interfaces/src/ERC/GemAbstract.sol";
 
 import "./CageFree.sol";
 
@@ -15,6 +16,7 @@ contract TubLike {
 
 contract TapLike {
     function vent() public;
+    function off() public view returns (bool);
 }
 
 contract TopLike {
@@ -32,6 +34,10 @@ contract ChiefLike {
     function lock(uint256) public;
     function vote(address[] memory) public;
     function lift(address) public;
+}
+
+contract StopLike {
+    function stopped() public view returns (bool);
 }
 
 contract CageFreeTest is DSTest, DSMath {
@@ -61,7 +67,7 @@ contract CageFreeTest is DSTest, DSMath {
         cageFree = new CageFree(mainnetTap, mainnetWeth);
     }
 
-        function vote() private {
+    function vote() private {
         gov.approve(address(chief), uint256(-1));
         chief.lock(gov.balanceOf(address(this)));
 
@@ -73,5 +79,29 @@ contract CageFreeTest is DSTest, DSMath {
         assertEq(chief.hat(), address(this));
 
         top.cage();
+        hevm.warp(now + 10 days);
+    }
+
+    function testCageFree() public {
+        assertTrue(!tub.off());
+        vote();
+        assertTrue(tub.off());
+
+        // Luckily the test address has a little over 1 Sai that we can use.
+        // Run some tests to ensure Sai is correct.
+        assertEq(cageFree.sai(), address(0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359));
+        assertTrue(GemAbstract(cageFree.sai()).balanceOf(address(gov)) > 10**18);
+        assertTrue(GemAbstract(cageFree.sai()).totalSupply() > 1);
+
+        assertTrue(!StopLike(cageFree.sai()).stopped());
+        assertTrue(tap.off());
+
+        //cageFree.freeCash(10**18);
+
+
+    }
+
+    function canCall(address, address, bytes4) public pure returns (bool) {
+        return true;
     }
 }
