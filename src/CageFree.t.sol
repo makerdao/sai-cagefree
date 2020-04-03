@@ -10,6 +10,7 @@ import "./CageFree.sol";
 contract Hevm { function warp(uint) public; }
 
 contract TubLike {
+    function gem() public view returns (address);
     function per() public view returns (uint256);
     function off() public view returns (bool);
 }
@@ -96,7 +97,11 @@ contract CageFreeTest is DSTest, DSMath {
         assertTrue(!StopLike(cageFree.sai()).stopped());
         assertTrue(tap.off());
 
-        //cageFree.freeCash(10**18);
+        GemAbstract(cageFree.sai()).approve(address(cageFree), uint256(-1));
+        assertEq(GemAbstract(cageFree.sai()).allowance(address(this), address(cageFree)), uint(-1));
+        assertTrue(GemAbstract(cageFree.weth()).balanceOf(address(tub)) > 10**18);
+
+        cageFree.freeCash(10**16);
 
 
     }
