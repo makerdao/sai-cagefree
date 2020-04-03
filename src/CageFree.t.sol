@@ -61,7 +61,7 @@ contract CageFreeTest is DSTest, DSMath {
         hevm = Hevm(address(CHEAT_CODE));
         // Using the MkrAuthority test address, mint enough MKR to overcome the
         // current hat.
-        gov.mint(address(this), 300000 ether);
+        //gov.mint(address(this), 300000 ether);
 
         address mainnetTap = address(0xBda109309f9FafA6Dd6A9CB9f1Df4085B27Ee8eF);
         address mainnetWeth = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
@@ -91,7 +91,7 @@ contract CageFreeTest is DSTest, DSMath {
         // Luckily the test address has a little over 1 Sai that we can use.
         // Run some tests to ensure Sai is correct.
         assertEq(cageFree.sai(), address(0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359));
-        assertTrue(GemAbstract(cageFree.sai()).balanceOf(address(gov)) > 10**18);
+        assertTrue(GemAbstract(cageFree.sai()).balanceOf(address(this)) > 10**16);
         assertTrue(GemAbstract(cageFree.sai()).totalSupply() > 1);
 
         assertTrue(!StopLike(cageFree.sai()).stopped());
@@ -99,9 +99,14 @@ contract CageFreeTest is DSTest, DSMath {
 
         GemAbstract(cageFree.sai()).approve(address(cageFree), uint256(-1));
         assertEq(GemAbstract(cageFree.sai()).allowance(address(this), address(cageFree)), uint(-1));
-        assertTrue(GemAbstract(cageFree.weth()).balanceOf(address(tub)) > 10**18);
+        assertTrue(GemAbstract(cageFree.weth()).balanceOf(address(tub)) > 10**16);
+        uint256 prebalance = address(this).balance;
+        assertTrue(prebalance > 1);
 
-        cageFree.freeCash(10**16);
+        uint256 freed = cageFree.freeCash(10**16);
+
+        assertTrue(freed > 0);
+        //assertTrue(prebalance < address(this).balance);
 
 
     }
