@@ -107,8 +107,6 @@ contract CageFreeTest is DSTest, DSMath {
 
         assertTrue(freed > 0);
         assertTrue(prebalance < address(this).balance);
-
-
     }
 
     function() external payable {}

@@ -42,5 +42,7 @@ contract CageFree {
         return cashoutBalance;
     }
 
-    function() external payable {}
+    function() external payable {
+        require(msg.sender == weth, "Only WETH can send ETH");
+    }
 }
