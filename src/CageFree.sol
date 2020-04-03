@@ -33,6 +33,7 @@ contract SaiTapInterface {
 contract TokenInterface {
     function approve(address, uint256) public;
     function transfer(address, uint256) public returns (bool);
+    function transferFrom(address, address, uint256) public returns (bool);
     function deposit() public payable;
     function withdraw(uint256) public;
 }
