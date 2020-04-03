@@ -30,7 +30,7 @@ contract CageFree {
         sai  = SaiTapInterface(tap).sai();
         weth = _weth;
         TokenInterface(sai).approve(tap, uint256(-1));
-        TokenInterface(weth).approve(weth, uint256(-1));
+        //TokenInterface(weth).approve(weth, uint256(-1));
     }
 
     function freeCash(uint256 wad) public payable returns (uint256) {
