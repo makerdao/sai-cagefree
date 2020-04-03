@@ -2,10 +2,13 @@ pragma solidity 0.5.15;
 
 import "ds-test/test.sol";
 import "ds-math/math.sol";
+import "lib/dss-interfaces/src/Interfaces.sol";
 
 import "./CageFree.sol";
 
 contract Hevm { function warp(uint) public; }
+
+
 
 contract CageFreeTest is DSTest, DSMath {
 
@@ -16,6 +19,7 @@ contract CageFreeTest is DSTest, DSMath {
     bytes20 constant CHEAT_CODE =
         bytes20(uint160(uint256(keccak256('hevm cheat code'))));
 
+
     function setUp() public {
         hevm = Hevm(address(CHEAT_CODE));
         address mainnetTap = address(0xBda109309f9FafA6Dd6A9CB9f1Df4085B27Ee8eF);
@@ -23,27 +27,4 @@ contract CageFreeTest is DSTest, DSMath {
         address mainnetWeth = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
         cageFree = new CageFree(mainnetTap, mainnetSai, mainnetWeth);
     }
-
-    function vote() private {
-        if (chief.hat() != address(spell)) {
-            gov.approve(address(chief), uint256(-1));
-            chief.lock(sub(gov.balanceOf(address(this)), 1 ether));
-
-            assertTrue(!spell.done());
-
-            address[] memory yays = new address[](1);
-            yays[0] = address(spell);
-
-            chief.vote(yays);
-            chief.lift(address(spell));
-        }
-        assertEq(chief.hat(), address(spell));
-    }
-
-    function scheduleWaitAndCast() public {
-        spell.schedule();
-        hevm.warp(add(now, pause.delay()));
-        spell.cast();
-    }
-
 }
