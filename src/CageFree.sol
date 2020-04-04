@@ -29,14 +29,14 @@ contract CageFree {
         TokenInterface(sai).approve(tap, uint256(-1));
     }
 
-    function freeCash(uint256 wad) public returns (uint256) {
+    function freeCash(uint256 wad) public returns (uint256 cashoutBalance) {
         TokenInterface(sai).transferFrom(msg.sender, address(this), wad);
         SaiTapInterface(tap).cash(wad);
-        uint256 cashoutBalance = TokenInterface(weth).balanceOf(address(this));
+        cashoutBalance = TokenInterface(weth).balanceOf(address(this));
+        require(cashoutBalance > 0);
         TokenInterface(weth).withdraw(cashoutBalance);
         msg.sender.transfer(cashoutBalance);
-        emit FreeCash(msg.sender, cashoutBalance);
-        return cashoutBalance;
+        emit FreeCash(msg.sender, cashoutBalance);        
     }
 
     function() external payable {
