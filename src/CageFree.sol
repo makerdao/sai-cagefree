@@ -33,10 +33,10 @@ contract CageFree {
         TokenInterface(sai).transferFrom(msg.sender, address(this), wad);
         SaiTapInterface(tap).cash(wad);
         cashoutBalance = TokenInterface(weth).balanceOf(address(this));
-        require(cashoutBalance > 0);
+        require(cashoutBalance > 0, "Zero ETH value");
         TokenInterface(weth).withdraw(cashoutBalance);
         msg.sender.transfer(cashoutBalance);
-        emit FreeCash(msg.sender, cashoutBalance);        
+        emit FreeCash(msg.sender, cashoutBalance);
     }
 
     function() external payable {
